@@ -93,6 +93,7 @@ const pageData = ref<PageData<Article>>({
 
 const categories = computed(() => categoryStore.categories)
 
+// 首页首屏需要同时展示文章数量、最新文章和分类，因此并行加载两类数据。
 onMounted(async () => {
   loading.value = true
   try {
@@ -107,10 +108,12 @@ onMounted(async () => {
   }
 })
 
+// 首页侧边栏分类点击后跳转到文章列表，并通过 query 触发列表筛选。
 function goCategory(categoryId: number | '') {
   router.push({ path: '/articles', query: categoryId ? { categoryId } : {} })
 }
 
+// “浏览文章”按钮跳转到全部文章列表。
 function goArticles() {
   router.push({ name: 'articles', query: {} })
 }

@@ -1,7 +1,9 @@
+# 本文件控制上传 GitHub 的范围：只提交前端源码、README、部署配置和必要静态资源。
 # Dependencies
 node_modules/
 frontend/node_modules/
 
+# 本地构建产物由 Vite 生成，Vercel 会在线重新构建，不需要提交。
 # Build output
 dist/
 frontend/dist/
@@ -13,6 +15,7 @@ frontend/.devserver/
 .cache/
 .turbo/
 
+# 环境变量可能包含本地配置或密钥，统一排除；如需示例文件，可提交 .env.example。
 # Environment files
 .env
 .env.*
@@ -34,6 +37,7 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 
+# 本地资料不上传 GitHub：后端实验目录、原始图片目录和根目录开发文档都只保留在本机。
 # Local-only project materials
 /image/
 /backend/

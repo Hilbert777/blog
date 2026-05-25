@@ -38,6 +38,7 @@ const route = useRoute()
 const authStore = useAuthStore()
 const formRef = ref<FormInstance>()
 const loading = ref(false)
+// 登录表单默认保持为空，避免页面自动填入管理员账号密码。
 const form = reactive({
   username: '',
   password: '',
@@ -48,6 +49,7 @@ const rules: FormRules = {
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 }
 
+// 登录成功后按 redirect 参数返回原目标页；没有 redirect 时进入后台仪表盘。
 async function submit() {
   await formRef.value?.validate()
   loading.value = true

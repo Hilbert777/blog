@@ -81,6 +81,7 @@ import { formatDate } from '@/utils/format'
 
 const categoryStore = useCategoryStore()
 const loading = ref(false)
+// 后台文章查询条件：支持关键词、分类、发布状态和分页。
 const query = reactive<ArticleQuery>({
   pageNum: 1,
   pageSize: 10,
@@ -95,11 +96,13 @@ const pageData = ref<PageData<Article>>({
   pageSize: 10,
 })
 
+// 后台文章列表进入时先加载分类，用于筛选下拉框和文章分类显示。
 onMounted(async () => {
   await categoryStore.fetchCategories()
   fetchList()
 })
 
+// 根据后台查询条件读取文章，后台接口会返回草稿和已发布文章。
 async function fetchList() {
   loading.value = true
   try {
@@ -109,11 +112,13 @@ async function fetchList() {
   }
 }
 
+// 查询按钮会回到第一页，避免筛选后页码超出结果范围。
 function search() {
   query.pageNum = 1
   fetchList()
 }
 
+// 重置后台筛选条件后重新加载全部文章。
 function reset() {
   query.pageNum = 1
   query.keyword = ''
@@ -122,11 +127,13 @@ function reset() {
   fetchList()
 }
 
+// 表格分页切换后重新读取对应页数据。
 function changePage(value: number) {
   query.pageNum = value
   fetchList()
 }
 
+// 删除文章前进行确认，确认后调用 Mock API 从 localStorage 中移除。
 async function remove(id: number) {
   await ElMessageBox.confirm('确定删除这篇文章吗？', '删除确认', { type: 'warning' })
   await deleteArticleApi(id)

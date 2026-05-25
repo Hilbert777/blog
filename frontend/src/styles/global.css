@@ -1,4 +1,5 @@
 :root {
+  /* 全局主题变量：白天模式使用浅色背景和白天背景图。 */
   color: #1f2937;
   background: #f6f7fb;
   font-family:
@@ -23,6 +24,7 @@
 }
 
 :root[data-theme='dark'] {
+  /* 黑夜模式通过 data-theme 切换变量，不需要在组件里单独写暗色逻辑。 */
   color: #e5e7eb;
   background: #0f172a;
   --brand: #60a5fa;
@@ -45,6 +47,7 @@
 }
 
 body {
+  /* 70% 遮罩 + 30% 背景图可见度；背景图随主题变量切换。 */
   margin: 0;
   min-width: 320px;
   background:
@@ -141,6 +144,7 @@ a {
 :root[data-theme='dark'] .login-card,
 :root[data-theme='dark'] .admin-panel,
 :root[data-theme='dark'] .admin-header {
+  /* 暗色模式下统一修正卡片、头部和后台面板的表面颜色。 */
   border-color: var(--line);
   background: var(--surface) !important;
 }

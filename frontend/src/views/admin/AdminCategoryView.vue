@@ -68,20 +68,24 @@ const rules: FormRules = {
   name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
 }
 
+// 页面进入时读取当前分类列表，数据来源为 localStorage Mock API。
 categoryStore.fetchCategories()
 
+// 新增分类时清空编辑状态和表单内容。
 function openCreate() {
   editingId.value = null
   form.name = ''
   dialogVisible.value = true
 }
 
+// 编辑分类时记录当前分类 id，并把名称回填到弹窗表单。
 function openEdit(row: Category) {
   editingId.value = row.id
   form.name = row.name
   dialogVisible.value = true
 }
 
+// 新增和编辑共用保存逻辑，通过 editingId 判断调用哪个 API。
 async function save() {
   await formRef.value?.validate()
   saving.value = true
@@ -99,6 +103,7 @@ async function save() {
   }
 }
 
+// 删除前二次确认；Mock 数据层会阻止删除仍有关联文章的分类。
 async function remove(id: number) {
   await ElMessageBox.confirm('确定删除这个分类吗？有关联文章时后端会拒绝删除。', '删除确认', { type: 'warning' })
   await deleteCategoryApi(id)

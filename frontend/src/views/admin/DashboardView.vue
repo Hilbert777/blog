@@ -47,6 +47,7 @@ const stats = ref<DashboardStats>({
   categoryTotal: 0,
 })
 
+// 仪表盘统计数据由 Mock API 根据本地文章和分类实时计算。
 onMounted(async () => {
   loading.value = true
   try {

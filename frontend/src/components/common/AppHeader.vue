@@ -41,6 +41,7 @@ const router = useRouter()
 const themeStore = useThemeStore()
 const keyword = ref('')
 
+// 顶部搜索框提交后统一跳转到文章列表页，由列表页根据 keyword 做筛选。
 function submitSearch() {
   router.push({
     path: '/articles',
@@ -48,6 +49,7 @@ function submitSearch() {
   })
 }
 
+// 导航栏“文章”入口使用命名路由，避免路径字符串在多个地方重复维护。
 function goArticles() {
   router.push({ name: 'articles', query: {} })
 }

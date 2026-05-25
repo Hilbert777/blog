@@ -47,6 +47,7 @@ const route = useRoute()
 const loading = ref(false)
 const article = ref<Article | null>(null)
 
+// 详情页通过路由参数 id 读取文章；如果文章不存在或未发布，则显示空状态。
 onMounted(async () => {
   loading.value = true
   try {

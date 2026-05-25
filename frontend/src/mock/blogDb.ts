@@ -17,7 +17,9 @@ interface MockDb {
   lastArticleId: number
 }
 
+// localStorage 中的模拟数据库 key；版本号变化时会重新生成默认数据。
 const DB_KEY = 'blog_frontend_mock_db_v2'
+// 模拟后台登录 token 的前缀，用于区分本项目生成的本地 token。
 const TOKEN_PREFIX = 'mock-blog-token'
 
 function now() {
@@ -36,6 +38,7 @@ function parseListValue(value: string) {
   return trimmed ? [trimmed.replace(/^['"]|['"]$/g, '')] : []
 }
 
+// 解析旧博客 Markdown 的 front matter，提取标题、日期、分类和正文。
 function readFrontMatter(raw: string) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/)
   const body = match ? raw.slice(match[0].length).trim() : raw.trim()
@@ -52,6 +55,7 @@ function readFrontMatter(raw: string) {
   }
 }
 
+// 从 Markdown 正文中提取纯文本摘要，去掉代码块、图片、链接和 Markdown 标记。
 function buildSummary(content: string) {
   const plain = content
     .replace(/```[\s\S]*?```/g, ' ')
@@ -66,6 +70,7 @@ function buildSummary(content: string) {
   return plain.length > 120 ? `${plain.slice(0, 120)}...` : plain
 }
 
+// 首次打开项目或本地数据版本过期时，生成默认管理员、分类和文章数据。
 function seedDb(): MockDb {
   const createdAt = now()
   const parsedPosts = importedPosts.map((post) => ({
@@ -143,6 +148,7 @@ function seedDb(): MockDb {
   }
 }
 
+// 读取 localStorage 中的 Mock 数据；结构不兼容时自动重置为最新种子数据。
 function loadDb(): MockDb {
   const raw = localStorage.getItem(DB_KEY)
   if (!raw) {
@@ -169,6 +175,7 @@ function saveDb(db: MockDb) {
   localStorage.setItem(DB_KEY, JSON.stringify(db))
 }
 
+// 模拟异步接口延迟，让页面 loading、表单提交等交互更接近真实请求。
 function run<T>(task: () => T): Promise<T> {
   return new Promise((resolve, reject) => {
     window.setTimeout(() => {
@@ -183,6 +190,7 @@ function run<T>(task: () => T): Promise<T> {
   })
 }
 
+// 后台写操作前统一校验登录状态，模拟真实后端的管理员权限保护。
 function assertAdmin() {
   const token = getToken()
   if (!token || !token.startsWith(TOKEN_PREFIX)) {
@@ -203,6 +211,7 @@ function getCategoryName(db: MockDb, categoryId: number) {
   return db.categories.find((item) => item.id === categoryId)?.name || '未分类'
 }
 
+// 文章返回前统一补齐分类名，并按列表/详情场景决定是否返回正文内容。
 function normalizeArticle(db: MockDb, article: Article, includeContent: boolean): Article {
   return {
     ...article,
@@ -211,6 +220,7 @@ function normalizeArticle(db: MockDb, article: Article, includeContent: boolean)
   }
 }
 
+// 统一处理文章分页、发布状态过滤、分类筛选和关键词搜索。
 function pageArticles(db: MockDb, query: ArticleQuery, onlyPublished: boolean): PageData<Article> {
   const pageNum = Math.max(Number(query.pageNum || 1), 1)
   const pageSize = Math.min(Math.max(Number(query.pageSize || 10), 1), 50)
@@ -250,6 +260,7 @@ function pageArticles(db: MockDb, query: ArticleQuery, onlyPublished: boolean): 
   }
 }
 
+// 分类名称校验：禁止空名称和重复名称，编辑时排除当前分类自身。
 function assertCategoryNameAvailable(db: MockDb, name: string, currentId?: number) {
   const normalized = name.trim()
   if (!normalized) {
@@ -261,6 +272,7 @@ function assertCategoryNameAvailable(db: MockDb, name: string, currentId?: numbe
   }
 }
 
+// 文章保存前做字段校验，保证后台新增和编辑写入的数据结构完整。
 function assertArticlePayload(db: MockDb, payload: ArticlePayload) {
   if (!payload.title.trim()) throw new Error('请输入标题')
   if (!payload.summary.trim()) throw new Error('请输入摘要')
@@ -272,6 +284,7 @@ function assertArticlePayload(db: MockDb, payload: ArticlePayload) {
   }
 }
 
+// 模拟登录接口：校验本地管理员账号密码，成功后返回 token 和用户信息。
 export function mockLogin(payload: { username: string; password: string }) {
   return run<LoginResult>(() => {
     const db = loadDb()
@@ -286,6 +299,7 @@ export function mockLogin(payload: { username: string; password: string }) {
   })
 }
 
+// 模拟“获取当前用户”接口，路由守卫和后台布局会用它恢复用户信息。
 export function mockCurrentUser() {
   return run<UserInfo>(() => {
     assertAdmin()
@@ -294,6 +308,7 @@ export function mockCurrentUser() {
   })
 }
 
+// 前台和后台共用分类列表读取接口。
 export function mockGetCategories() {
   return run<Category[]>(() => {
     const db = loadDb()
@@ -301,6 +316,7 @@ export function mockGetCategories() {
   })
 }
 
+// 后台新增分类接口，写入 localStorage 后返回新分类。
 export function mockCreateCategory(payload: { name: string }) {
   return run<Category>(() => {
     assertAdmin()
@@ -318,6 +334,7 @@ export function mockCreateCategory(payload: { name: string }) {
   })
 }
 
+// 后台编辑分类接口，同时同步更新已关联文章上的分类名。
 export function mockUpdateCategory(id: number, payload: { name: string }) {
   return run<Category>(() => {
     assertAdmin()
@@ -334,6 +351,7 @@ export function mockUpdateCategory(id: number, payload: { name: string }) {
   })
 }
 
+// 后台删除分类接口；如果分类下仍有文章，则拒绝删除。
 export function mockDeleteCategory(id: number) {
   return run<null>(() => {
     assertAdmin()
@@ -347,10 +365,12 @@ export function mockDeleteCategory(id: number) {
   })
 }
 
+// 前台文章列表接口，只返回已发布文章。
 export function mockGetArticles(params: ArticleQuery) {
   return run<PageData<Article>>(() => pageArticles(loadDb(), params, true))
 }
 
+// 后台文章列表接口，可按草稿/已发布状态查看全部文章。
 export function mockGetAdminArticles(params: ArticleQuery) {
   return run<PageData<Article>>(() => {
     assertAdmin()
@@ -358,6 +378,7 @@ export function mockGetAdminArticles(params: ArticleQuery) {
   })
 }
 
+// 文章详情接口：前台只允许查看已发布文章，后台编辑场景可读取草稿。
 export function mockGetArticle(id: number | string, admin = false) {
   return run<Article>(() => {
     if (admin) assertAdmin()
@@ -370,6 +391,7 @@ export function mockGetArticle(id: number | string, admin = false) {
   })
 }
 
+// 后台新增文章接口，保存 Markdown 正文、摘要、分类和发布状态。
 export function mockCreateArticle(payload: ArticlePayload) {
   return run<Article>(() => {
     assertAdmin()
@@ -395,6 +417,7 @@ export function mockCreateArticle(payload: ArticlePayload) {
   })
 }
 
+// 后台编辑文章接口，保留原创建时间，只更新内容和 updatedAt。
 export function mockUpdateArticle(id: number | string, payload: ArticlePayload) {
   return run<Article>(() => {
     assertAdmin()
@@ -420,6 +443,7 @@ export function mockUpdateArticle(id: number | string, payload: ArticlePayload) 
   })
 }
 
+// 后台删除文章接口，从 localStorage 的文章数组中移除对应记录。
 export function mockDeleteArticle(id: number | string) {
   return run<null>(() => {
     assertAdmin()
@@ -432,6 +456,7 @@ export function mockDeleteArticle(id: number | string) {
   })
 }
 
+// 后台仪表盘统计接口，直接基于本地文章和分类数据计算。
 export function mockDashboardStats() {
   return run<DashboardStats>(() => {
     assertAdmin()

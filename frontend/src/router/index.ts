@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
 
+// 前台使用 history 路由，Vercel 中通过 rewrites 回退到 index.html，避免刷新子路由 404。
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -33,6 +34,7 @@ const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 })
 
+// 后台路由守卫：未登录访问 /admin 时跳转登录页，并记录原始目标地址。
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {

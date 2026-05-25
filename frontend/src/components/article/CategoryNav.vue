@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import type { Category } from '@/types/blog'
 
+// 分类导航只负责展示和抛出 change 事件，具体筛选逻辑交给页面处理。
 defineProps<{
   categories: Category[]
   currentId?: number | string

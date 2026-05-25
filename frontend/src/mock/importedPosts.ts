@@ -8,11 +8,13 @@ import csappLab7 from '@/content/posts/CSAPP-Lab7.md?raw'
 import csappLab8 from '@/content/posts/CSAPP-Lab8.md?raw'
 import networkTraceroute from '@/content/posts/Network-traceroute.md?raw'
 
+// Vite 的 ?raw 可以把 Markdown 文件作为字符串导入，便于在纯前端中初始化文章数据。
 export interface ImportedPost {
   filename: string
   raw: string
 }
 
+// 这里集中登记从旧博客迁移过来的文章，Self-Introduction.md 按需求不迁移。
 export const importedPosts: ImportedPost[] = [
   { filename: 'CSAPP-Lab1.md', raw: csappLab1 },
   { filename: 'CSAPP-Lab2.md', raw: csappLab2 },

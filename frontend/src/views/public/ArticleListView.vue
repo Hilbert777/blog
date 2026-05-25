@@ -76,6 +76,7 @@ const currentSummary = computed(() => {
   return parts.length ? parts.join('，') : '全部已发布文章'
 })
 
+// 文章列表以 URL query 作为筛选状态来源，刷新页面后仍能保留搜索和分类条件。
 watch(
   () => route.fullPath,
   async () => {
@@ -88,12 +89,14 @@ watch(
   { immediate: true },
 )
 
+// 将路由 query 同步到页面响应式状态。
 function syncQuery() {
   keyword.value = normalizeKeyword(route.query.keyword)
   categoryId.value = route.query.categoryId ? Number(route.query.categoryId) : ''
   pageNum.value = route.query.pageNum ? Number(route.query.pageNum) : 1
 }
 
+// 根据当前页码、关键词和分类查询文章；实际数据由 localStorage Mock API 返回。
 async function fetchList() {
   loading.value = true
   try {
@@ -109,6 +112,7 @@ async function fetchList() {
   }
 }
 
+// 统一更新文章列表 query，避免搜索、分类和分页互相覆盖。
 function pushQuery(next: Record<string, string | number | undefined>) {
   router.push({
     path: '/articles',
@@ -121,28 +125,33 @@ function pushQuery(next: Record<string, string | number | undefined>) {
   })
 }
 
+// 搜索时重置到第一页，防止原页码在新筛选条件下越界。
 function submitSearch() {
   pageNum.value = 1
   pushQuery({ keyword: keyword.value || undefined, pageNum: undefined })
 }
 
+// 清空关键词后保留其它筛选条件，并重新查询。
 function clearSearch() {
   keyword.value = ''
   pageNum.value = 1
   pushQuery({ keyword: undefined, pageNum: undefined })
 }
 
+// 切换分类时重置分页，并把分类 id 写入 URL。
 function changeCategory(value: number | '') {
   categoryId.value = value
   pageNum.value = 1
   pushQuery({ categoryId: value || undefined, pageNum: undefined })
 }
 
+// 分页组件变化后写入 pageNum，再触发路由监听重新加载列表。
 function changePage(value: number) {
   pageNum.value = value
   pushQuery({ pageNum: value })
 }
 
+// 空状态按钮使用：清除全部筛选条件并回到文章列表首页。
 function resetFilters() {
   keyword.value = ''
   categoryId.value = ''

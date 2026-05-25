@@ -74,6 +74,7 @@ const form = reactive<ArticlePayload>({
   status: 'draft',
 })
 
+// Element Plus 表单校验规则，确保文章保存前具备标题、摘要、分类、正文和状态。
 const rules: FormRules = {
   title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
   summary: [{ required: true, message: '请输入摘要', trigger: 'blur' }],
@@ -82,6 +83,7 @@ const rules: FormRules = {
   status: [{ required: true, message: '请选择状态', trigger: 'change' }],
 }
 
+// 编辑文章时把外部传入的初始值同步到表单；新增文章时保持默认空表单。
 watch(
   () => props.initialValue,
   (value) => {
@@ -91,12 +93,14 @@ watch(
   { immediate: true },
 )
 
+// 进入表单页面时先加载分类，保证文章可以选择已有分类。
 onMounted(() => {
   if (!categoryStore.categories.length) {
     categoryStore.fetchCategories()
   }
 })
 
+// 提交前执行 Element Plus 表单校验，并把 categoryId 转成数字写入文章数据。
 async function handleSubmit() {
   await formRef.value?.validate()
   if (!String(form.content).trim()) {
@@ -106,6 +110,7 @@ async function handleSubmit() {
   emit('submit', { ...form, categoryId: Number(form.categoryId) })
 }
 
+// 表单内快速创建自定义分类，创建成功后刷新分类列表并自动选中新分类。
 async function createCategory() {
   const name = newCategoryName.value.trim()
   if (!name) {

@@ -16,6 +16,7 @@
 import type { Article } from '@/types/blog'
 import { formatDate } from '@/utils/format'
 
+// 文章卡片整体使用 RouterLink，点击标题、摘要或卡片空白处都能进入详情页。
 defineProps<{
   article: Article
 }>()

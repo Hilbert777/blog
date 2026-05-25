@@ -9,6 +9,7 @@ import {
 } from '@/mock/blogDb'
 import type { ArticlePayload, ArticleQuery } from '@/types/blog'
 
+// 文章 API 适配层：页面仍按真实项目调用 API，当前实现转发到 localStorage Mock 数据层。
 export function getArticlesApi(params: ArticleQuery) {
   return mockGetArticles(params)
 }

@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import { Search } from 'lucide-vue-next'
 
+// 通用搜索栏组件：通过 v-model 暴露关键词，通过事件通知父组件执行搜索或清空。
 defineProps<{
   modelValue: string
   loading?: boolean

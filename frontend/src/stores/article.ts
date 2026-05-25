@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { getArticlesApi } from '@/api/article'
 import type { Article, ArticleQuery, PageData } from '@/types/blog'
 
+// 文章列表状态仓库：缓存分页结果和 loading 状态，供前台列表页面复用。
 export const useArticleStore = defineStore('article', {
   state: () => ({
     pageData: {

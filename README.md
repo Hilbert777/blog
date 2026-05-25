@@ -2,6 +2,10 @@
 
 Hilbert's Blog 是一个以前端实践为主的个人博客项目。当前版本采用纯前端运行方案，不依赖后端服务和数据库，文章、分类、登录状态等演示数据通过浏览器 `localStorage` 模拟保存。
 
+页面已部署在Vercel：https://blog-ashen-nu.vercel.app/
+
+这个blog主要用于天津大学软件工程专业前端开发综合实践作业展示，部分内容沿用了我之前使用Hexo + GitHub Pages 搭建的个人博客：https://hilbert777.github.io。如果您对我的文章感兴趣，欢迎访问我的博客继续交流！
+
 ## 功能特性
 
 - 前台首页、文章列表、文章详情页

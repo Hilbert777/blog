@@ -1,7 +1,37 @@
-# 博客前台后台系统
+# Hilbert's Blog
 
-这是一个以前端实践为主的博客系统。当前默认采用“纯前端运行”方案，所有文章、分类和登录数据都保存在浏览器 `localStorage` 中，不需要启动 Java 后端、不需要 Maven，也不需要 MySQL。
+Hilbert's Blog 是一个以前端实践为主的个人博客项目。当前版本采用纯前端运行方案，不依赖后端服务和数据库，文章、分类、登录状态等演示数据通过浏览器 `localStorage` 模拟保存。
 
+## 功能特性
+
+- 前台首页、文章列表、文章详情页
+- 最新文章跳转、导航栏文章跳转、文章卡片跳转
+- 文章分类筛选和关键词搜索
+- 后台登录、文章管理、文章新增/编辑/删除
+- 后台自定义分类新增、编辑、删除
+- Markdown 文章编辑和展示
+- 明亮/黑夜模式切换
+- 明亮/黑夜背景图切换
+- 作者信息展示
+- Vercel SPA 路由回退配置
+
+## 内容说明
+
+项目内置了 11 篇默认文章：
+
+- 2 篇前端实践示例文章
+- 从旧博客文章中迁移的 9 篇历史文章：
+  - `CSAPP-Lab1.md`
+  - `CSAPP-Lab2.md`
+  - `CSAPP-Lab3.md`
+  - `CSAPP-Lab4.md`
+  - `CSAPP-Lab5.md`
+  - `CSAPP-Lab6.md`
+  - `CSAPP-Lab7.md`
+  - `CSAPP-Lab8.md`
+  - `Network-traceroute.md`
+
+`Self-Introduction.md` 未迁移。迁移后的 Markdown 文件位于 `frontend/src/content/posts/`，文章图片资源位于 `frontend/public/images/`。
 
 ## 技术栈
 
@@ -11,10 +41,33 @@
 - Vue Router
 - Pinia
 - Element Plus
+- lucide-vue-next
 - md-editor-v3
 - localStorage Mock API
 
-## 启动前端
+## 项目结构
+
+```text
+blog/
+|-- frontend/                 # 前端项目，Vercel 部署根目录
+|   |-- public/images/         # 头像、图标、背景图、文章图片
+|   |-- src/api/               # 前端 API 封装
+|   |-- src/components/        # 公共组件和文章组件
+|   |-- src/content/posts/     # 内置 Markdown 文章
+|   |-- src/layouts/           # 前台/后台布局
+|   |-- src/mock/              # localStorage Mock 数据层
+|   |-- src/router/            # 路由配置
+|   |-- src/stores/            # Pinia 状态管理
+|   |-- src/styles/            # 全局样式
+|   |-- src/views/             # 页面视图
+|   `-- vercel.json            # Vercel 前端路由回退配置
+|-- README.md
+`-- .gitignore
+```
+
+## 本地运行
+
+进入前端目录：
 
 ```bash
 cd frontend
@@ -22,27 +75,59 @@ npm install
 npm run dev
 ```
 
-访问地址：
+默认访问地址：
 
 - 前台首页：`http://localhost:5173/`
+- 文章列表：`http://localhost:5173/articles`
 - 后台登录：`http://localhost:5173/login`
 
-## 测试账号
+## 后台测试账号
 
-- 账号：`admin`
-- 密码：`123456`
+```text
+账号：admin
+密码：123456
+```
 
-## 数据说明
+登录页不会自动填充管理员账号和密码，需要手动输入。
 
-首次打开页面时，前端会自动向 `localStorage` 写入演示数据：
+## 数据存储
 
-- 管理员账号
-- 默认分类和从旧博客文章中解析出的分类
-- 2 篇项目示例文章
-- 从 `D:\blog\HilbertBlog\source\_posts` 搬运的 9 篇历史文章，不包含 `Self-Introduction.md`
+当前项目不需要启动后端。首次打开页面时，前端会自动向 `localStorage` 写入默认数据。
 
-后台新增、编辑、删除的文章和分类也会保存在 `localStorage` 中。清空浏览器站点数据后，系统会重新生成默认演示数据。
+主要本地存储键：
 
-## 可选后端
+- `blog_frontend_mock_db_v2`：文章、分类、用户等 Mock 数据
+- `blog_admin_token`：后台登录 token
+- `blog_theme_mode`：明亮/黑夜主题
 
-`backend/` 中保留了一套 Spring Boot + MyBatis-Plus + JWT 示例接口。如果后续课程要求真实接口联调，可以安装 Maven 和 MySQL 后再启用后端。
+如果需要恢复默认演示数据，可以在浏览器开发者工具中清理当前站点的 localStorage，然后刷新页面。
+
+## 构建
+
+```bash
+cd frontend
+npm run build
+```
+
+构建产物输出到 `frontend/dist/`。该目录不会提交到 Git。
+
+本地预览生产构建：
+
+```bash
+npm run preview
+```
+
+## Vercel 部署
+
+在 Vercel 导入 GitHub 仓库后，使用以下配置：
+
+```text
+Framework Preset: Vite
+Root Directory: frontend
+Install Command: npm install
+Build Command: npm run build
+Output Directory: dist
+Environment Variables: 不需要配置
+```
+
+根目录 `vercel.json` 已配置从仓库根目录进入 `frontend` 构建，并发布 `frontend/dist`。`frontend/vercel.json` 保留了当前端目录作为 Vercel Root Directory 时的 SPA 路由回退配置。部署后直接刷新 `/articles` 或 `/articles/:id` 不会出现 404。
